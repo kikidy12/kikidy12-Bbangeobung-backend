@@ -38,9 +38,9 @@ public class SecurityConfig {
 
                 .authorizeRequests()
                 .antMatchers("/api/signup", "/api/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/post/").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/post/{id}").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/category/{id}").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/store/").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/store/").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/store/{storeId}").permitAll()
                 .antMatchers("/api/**").authenticated()
 
                 .and()

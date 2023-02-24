@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class S3Uploader {
     }
 
     private String upload(File uploadFile, String dirName) {
-        String fileName = dirName + "/" + uploadFile.getName();
+        String fileName = dirName + "/" + UUID.randomUUID() + "_" + uploadFile.getName();
         String uploadImageUrl = putS3(uploadFile, fileName);
 
         removeNewFile(uploadFile);  // 로컬에 생성된 File 삭제 (MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
