@@ -30,6 +30,21 @@ public class SwaggerConfig {
                         .name("BE: 김동민")
                         .name("BE: 손채이"));
 
-        return new OpenAPI().info(info);
+
+
+        // SecuritySecheme명
+        String jwtSchemeName = "Authorization";
+        // API 요청헤더에 인증정보 포함
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
+        // SecuritySchemes 등록
+        Components components = new Components()
+                .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
+                        .name(jwtSchemeName)
+                        .type(SecurityScheme.Type.HTTP) // HTTP 방식
+                        .scheme("bearer")
+                        .bearerFormat("JWT"));
+
+        return new OpenAPI().info(info).addSecurityItem(securityRequirement)
+                .components(components);
     }
 }
