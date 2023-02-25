@@ -17,10 +17,6 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //닉네임 추가
-    @Column(nullable = false)
-    private String nikName;
-
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -38,8 +34,7 @@ public class User extends Timestamped {
     private Set<Store> stores;
 
 
-    public User(String nikName, String email, String username, String password, UserRoleEnum role) {
-        this.nikName = nikName;
+    public User(String email, String username, String password, UserRoleEnum role) {
         this.email = email;
         this.username = username;
         this.password = password;
@@ -47,8 +42,7 @@ public class User extends Timestamped {
     }
 
     public void update(UserRequestDto requestDto){
-        this.nikName = requestDto.getNikName();
-        this.email = requestDto.getEmail();
+        this.username = requestDto.getUsername();
     }
 
 

@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
 
     // 회원가입 하기
@@ -50,8 +50,6 @@ public class UserController {
         return userService.userUpdate(requestDto,response);
 
     }
-
-
 
     // 회원 삭제
     public String delete(@PathVariable Long id){

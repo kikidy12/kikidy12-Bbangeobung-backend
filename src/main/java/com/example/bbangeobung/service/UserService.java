@@ -28,7 +28,7 @@ public class UserService {
     public void signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
-        String nikName = signupRequestDto.getNikName();
+        String email = signupRequestDto.getEmail();
 
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
@@ -36,7 +36,10 @@ public class UserService {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
-        String email = signupRequestDto.getEmail();
+        Optional<User> foundEmail = userRepository.findByEmail(email);
+        if (foundEmail.isPresent()) {
+            throw new IllegalArgumentException("중복된 이메일이 존재합니다.");
+        }
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
@@ -47,12 +50,10 @@ public class UserService {
             role = UserRoleEnum.ADMIN;
         }
         //닉네임 중복확인
-        Optional<User> nikfound = userRepository.findByNikName(nikName);
-        if (nikfound.isPresent()) {
-            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
-        }
 
-        User user = new User(username, password, email,nikName, role);
+
+
+        User user = new User(username, password, email, role);
         userRepository.save(user);
 
 
@@ -68,6 +69,7 @@ public class UserService {
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
         );
 
+
         // 비밀번호 확인
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
@@ -77,14 +79,11 @@ public class UserService {
     }
 
     @Transactional
-    public String userUpdate(UserRequestDto requestDto) {
+    public String userUpdate(UserRequestDto requestDto,HttpServletResponse response) {
 
-        String nikName = requestDto.getNikName();
-        String email = requestDto.getEmail();
-
-        Optional<User> nikfound = userRepository.findByNikName(nikName);
-        if (nikfound.isPresent()) {
-            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+        Optional<User> found = userRepository.findByUsername(username);
+        if (found.isPresent()) {
+            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
     }
