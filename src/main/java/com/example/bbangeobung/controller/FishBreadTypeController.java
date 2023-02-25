@@ -2,10 +2,12 @@ package com.example.bbangeobung.controller;
 
 import com.example.bbangeobung.common.dto.ResponseDto;
 import com.example.bbangeobung.dto.FishBreadTypeDto;
+import com.example.bbangeobung.entity.UserRoleEnum;
 import com.example.bbangeobung.security.UserDetailsImpl;
 import com.example.bbangeobung.service.FishBreadTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,20 +19,22 @@ import java.util.List;
 
 @Tag(name = "FishBreadType")
 @RestController
-@RequestMapping("/api/fishBreadType")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class FishBreadTypeController {
 
     private final FishBreadTypeService fishBreadTypeService;
 
-    @GetMapping("/")
+    @GetMapping("/fishBreadType")
+    @SecurityRequirements()
     @Operation(summary = "붕어빵 타입 목록 조회", description = "붕어빵 타입 목록 조회")
     public ResponseDto<List<FishBreadTypeDto.FishBreadTypeRes>> getFishBreadType() {
 
         return ResponseDto.of(HttpStatus.OK, "조회 성공", fishBreadTypeService.getFishBreadTypes());
     }
 
-    @GetMapping("/{fishBreadTypeId}")
+    @GetMapping("/fishBreadType/{fishBreadTypeId}")
+    @SecurityRequirements()
     @Operation(summary = "붕어빵 타입 단일 조회", description = "붕어빵 타입 단일 조회")
     public ResponseDto<FishBreadTypeDto.FishBreadTypeRes> getFishBreadType(@PathVariable Long fishBreadTypeId) {
 
@@ -38,8 +42,8 @@ public class FishBreadTypeController {
                 fishBreadTypeService.getFishBreadType(fishBreadTypeId));
     }
 
-    @Secured(value = "ROLE_ADMIN")
-    @PostMapping("/")
+    @Secured(UserRoleEnum.Authority.ADMIN)
+    @PostMapping("/admin/fishBreadType")
     @Operation(summary = "붕어빵 타입 등록", description = "붕어빵 타입 등록 관리자만 가능")
     public ResponseDto<FishBreadTypeDto.FishBreadTypeRes> addFishBreadType(
             @RequestBody FishBreadTypeDto.FishBreadTypeAdd dto
@@ -48,8 +52,8 @@ public class FishBreadTypeController {
         return ResponseDto.of(HttpStatus.OK, "등록 성공", fishBreadTypeService.addFishBreadType(dto));
     }
 
-    @Secured(value = "ROLE_ADMIN")
-    @DeleteMapping("/{fishBreadTypeId}")
+    @Secured(UserRoleEnum.Authority.ADMIN)
+    @DeleteMapping("/admin/fishBreadType/{fishBreadTypeId}")
     @Operation(summary = "붕어빵 타입 수정", description = "붕어빵 타입 수정 관리자만 가능")
     public ResponseDto deleteFishBreadType(
             @PathVariable Long fishBreadTypeId
@@ -58,8 +62,8 @@ public class FishBreadTypeController {
 
         return ResponseDto.of(HttpStatus.OK, "삭제 성공");
     }
-    @Secured(value = "ROLE_ADMIN")
-    @PutMapping("/{fishBreadTypeId}")
+    @Secured(UserRoleEnum.Authority.ADMIN)
+    @PutMapping("/admin/fishBreadType/{fishBreadTypeId}")
     @Operation(summary = "붕어빵 타입 수정", description = "붕어빵 타입 수정 관리자만 가능")
     public ResponseDto<FishBreadTypeDto.FishBreadTypeRes> updateFishBreadType(
             @PathVariable Long fishBreadTypeId,

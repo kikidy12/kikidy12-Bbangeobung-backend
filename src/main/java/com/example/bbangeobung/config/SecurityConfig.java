@@ -14,6 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -38,13 +44,15 @@ public class SecurityConfig {
         http
                 .httpBasic().disable()
                 .csrf().disable()
-                .cors().disable()
+                .cors().configurationSource(corsConfigurationSource())
 
+                .and()
                 .authorizeRequests()
                 .antMatchers("/api/user/signup", "/api/user/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/store/").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/store").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/store/{storeId}").permitAll()
-                .antMatchers("/api/fishBreadType/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/fishBreadType/{fishBreadTypeId}").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/fishBreadType").permitAll()
                 .antMatchers("/api/**").authenticated()
 
                 .and()
@@ -60,6 +68,21 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "DELETE", "PUT"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setMaxAge(3600L);
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }
 
