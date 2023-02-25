@@ -34,7 +34,7 @@ public class StoreReportService {
     public StoreReportResponseDto createStoreReport(Long storeId,String reason, User user) {
 
         Store store = storeRepository.findById(storeId).orElseThrow(
-                () -> new CustomClientException("리뷰가 존재하지 않습니다.")
+                () -> new CustomClientException("가게가 존재하지 않습니다.")
         );
 
         StoreReport report = new StoreReport(reason, user, store);
