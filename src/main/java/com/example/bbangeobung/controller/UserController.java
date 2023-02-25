@@ -14,12 +14,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Tag(name = "User")
 @RestController
@@ -46,10 +47,13 @@ public class UserController {
     }
 
 
-//     // 로그아웃 처리
-//    @GetMapping("/user")
-//    public ModelAndView myPage() {
-//        return new ModelAndView("user");
+//    //  로그아웃 처리
+//    @GetMapping("/user/logout")
+//    public ResponseDto<UserResponseDto> lougout(HttpServletRequest request) {
+//        HttpSession session = request.getSession();
+//        session.invalidate();
+//        return ResponseDto.of(HttpStatus.OK, "로그아웃 되었습니다.");
+//
 //    }
 
     // 마이페이지 이름 수정
@@ -63,11 +67,12 @@ public class UserController {
 
     }
 
-//    // 회원 삭제
-//    public String delete(@PathVariable Long id){
-//        userService.UserDelete(id);
-//        return "redirect:/api/user/login";
-//    }
+    // 회원 삭제
+    @DeleteMapping("/user")
+    public ResponseDto<UserResponseDto> delete(@Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
+        userService.delete(userDetails.getUser());
+        return ResponseDto.of(HttpStatus.OK,"삭제되었습니다.");
+    }
 
 
 
