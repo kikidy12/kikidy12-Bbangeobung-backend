@@ -9,13 +9,8 @@ import lombok.Setter;
 public class UserRequestDto {
     private String username;
 
-    // 이미지 바꾸기 구현 못함
-
-
-
-
-
-
-
-
+    public String password;
+    public String currentPassword;
 }
+
+    // 이미지 바꾸기 구현 못함

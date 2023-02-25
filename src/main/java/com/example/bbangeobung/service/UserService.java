@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -36,14 +37,13 @@ public class UserService {
 
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
+        String email = signupRequestDto.getEmail();
 
         // 회원 중복 확인
-        Optional<User> found = userRepository.findByUsername(username);
+        Optional<User> found = userRepository.findByEmail(email);
         if (found.isPresent()) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
-
-        String email = signupRequestDto.getEmail();
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
@@ -88,14 +88,24 @@ public class UserService {
     }
 
     @Transactional
-    public String userUpdate(UserRequestDto requestDto,HttpServletResponse response) {
+    public void update(UserRequestDto requestDto, HttpServletResponse response) {
+        String username = requestDto.getUsername();
+        String password = requestDto.getPassword();
+        String currentPassword = requestDto.getCurrentPassword();
 
-        Optional<User> found = userRepository.findByUsername(username);
-        if (found.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+        if (username != null || password != null || currentPassword != null){
+            User user = userRepository.findByUsername(username).orElseThrow(
+                    () -> new IllegalArgumentException("")
+            );
+            //사용자의 비번과 db의 비번 비교
+//            this.passwordEncoder.matches(currentPassword,user.getPassword());
+            if (this.passwordEncoder.matches(currentPassword,user.getPassword())){
+                user.UserUpdate(requestDto);
+            }
+
         }
-
     }
+
 
     @Transactional
     public void UserDelete(Long id) {

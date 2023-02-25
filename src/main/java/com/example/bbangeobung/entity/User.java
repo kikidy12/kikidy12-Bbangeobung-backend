@@ -1,5 +1,6 @@
 package com.example.bbangeobung.entity;
 
+import com.example.bbangeobung.dto.UserRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,4 +40,11 @@ public class User extends Timestamped {
         this.password = password;
         this.role = role;
     }
+
+    public void UserUpdate(UserRequestDto requestDto) {
+        this.username = requestDto.getUsername();
+        this.password = requestDto.getPassword();
+        this.role = role;
+    }
+
 }

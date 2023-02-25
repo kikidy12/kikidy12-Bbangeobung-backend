@@ -21,4 +21,11 @@ public class UserResponseDto {
         this.username = username;
         this.role = role;
     }
+//    @Builder
+//    public UserUpdate(Long id,  String username, UserRoleEnum role) {
+//        this.id = id;
+//        this.username = username;
+//        this.role = role;
+//    }
+
 }

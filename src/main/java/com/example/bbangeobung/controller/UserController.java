@@ -40,24 +40,25 @@ public class UserController {
     }
 
 
-     // 로그아웃 처리
-    @GetMapping("/user")
-    public ModelAndView myPage() {
-        return new ModelAndView("user");
-    }
+//     // 로그아웃 처리
+//    @GetMapping("/user")
+//    public ModelAndView myPage() {
+//        return new ModelAndView("user");
+//    }
 
     // 마이페이지 이름 수정
     @PutMapping("/user")
-    public String update( @RequestBody UserRequestDto requestDto, HttpServletResponse response){
-        return userService.userUpdate(requestDto,response);
+    public void update(@RequestBody UserRequestDto requestDto, HttpServletResponse response){
+//        return ResponseDto.of(HttpStatus.OK, "수정되었습니다.", userService.update(requestDto, response));
+        userService.update(requestDto,response);
 
     }
 
-    // 회원 삭제
-    public String delete(@PathVariable Long id){
-        userService.UserDelete(id);
-        return "redirect:/api/user/login";
-    }
+//    // 회원 삭제
+//    public String delete(@PathVariable Long id){
+//        userService.UserDelete(id);
+//        return "redirect:/api/user/login";
+//    }
 
 
 
