@@ -1,5 +1,7 @@
 package com.example.bbangeobung.config;
 
+import com.example.bbangeobung.jwt.JwtAuthFilter;
+import com.example.bbangeobung.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtUtil jwtUtil;
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -37,15 +41,18 @@ public class SecurityConfig {
                 .cors().disable()
 
                 .authorizeRequests()
-                .antMatchers("/api/signup", "/api/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/post/").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/post/{id}").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/category/{id}").permitAll()
+                .antMatchers("/api/user/signup", "/api/user/login").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/store/").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/store/{storeId}").permitAll()
+                .antMatchers("/api/fishBreadType/**").permitAll()
                 .antMatchers("/api/**").authenticated()
 
                 .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                .and()
+                .addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();
