@@ -50,10 +50,12 @@ public class FishBreadTypeController {
     }
 
     @PutMapping("/{fishBreadTypeId}")
-    public ResponseDto<FishBreadTypeDto.FishBreadTypeRes> deleteFishBreadType(
+    public ResponseDto<FishBreadTypeDto.FishBreadTypeRes> updateFishBreadType(
             @PathVariable Long fishBreadTypeId,
             @RequestBody FishBreadTypeDto.FishBreadTypeUpdate dto
             ) {
+
+        System.out.println(dto.getName());
 
         return ResponseDto.of(HttpStatus.OK, "수정 성공",
                 fishBreadTypeService.updateFishBreadType(fishBreadTypeId, dto));

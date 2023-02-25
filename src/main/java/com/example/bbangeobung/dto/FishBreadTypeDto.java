@@ -2,10 +2,12 @@ package com.example.bbangeobung.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class FishBreadTypeDto {
 
     @Getter
+    @NoArgsConstructor
     public static class FishBreadTypeAdd {
         private String name;
 
@@ -16,6 +18,7 @@ public class FishBreadTypeDto {
     }
 
     @Getter
+    @NoArgsConstructor
     public static class FishBreadTypeUpdate {
         private String name;
 
@@ -26,6 +29,7 @@ public class FishBreadTypeDto {
     }
 
     @Getter
+    @NoArgsConstructor
     public static class FishBreadTypeRes {
 
         private Long id;
