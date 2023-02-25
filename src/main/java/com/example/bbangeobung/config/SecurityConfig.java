@@ -1,5 +1,6 @@
 package com.example.bbangeobung.config;
 
+import com.example.bbangeobung.cors.CorsFilter;
 import com.example.bbangeobung.jwt.JwtAuthFilter;
 import com.example.bbangeobung.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +45,8 @@ public class SecurityConfig {
         http
                 .httpBasic().disable()
                 .csrf().disable()
-                .cors().configurationSource(corsConfigurationSource())
+                .cors().disable()
 
-                .and()
                 .authorizeRequests()
                 .antMatchers("/api/user/signup", "/api/user/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/store").permitAll()
@@ -60,7 +60,8 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
-                .addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new CorsFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthFilter(jwtUtil), CorsFilter.class);
 
 
         return http.build();
@@ -68,21 +69,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "DELETE", "PUT"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setMaxAge(3600L);
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
     }
 }
 
