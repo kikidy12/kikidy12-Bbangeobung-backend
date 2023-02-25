@@ -10,6 +10,9 @@ import com.example.bbangeobung.repository.FishBreadTypeRepository;
 import com.example.bbangeobung.repository.StoreInfoFishBreadTypeRepository;
 import com.example.bbangeobung.repository.StoreRepository;
 import com.example.bbangeobung.util.S3Uploader;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,9 +67,11 @@ public class StoreService {
     @Transactional
     public StoreDto.StoreRes addStore(StoreDto.StoreAdd dto) {
         try {
+            ObjectMapper objectMapper = new ObjectMapper().registerModule(new SimpleModule());
+            List<StoreDto.ItemAddDto> itemList = objectMapper.readValue(dto.getJsonList(), new TypeReference<>() {});
             String imageUrl = s3Uploader.upload(dto.getImageFile());
 
-            Set<Long> fishBreadTypeIdSet = dto.getItemList().stream().map(v -> Long.parseLong(v.split(":")[0])).collect(Collectors.toSet());
+            Set<Long> fishBreadTypeIdSet = itemList.stream().map(StoreDto.ItemAddDto::getFishBreadTypeId).collect(Collectors.toSet());
 
             List<FishBreadType> typeList = fishBreadTypeRepository.findByIdIn(fishBreadTypeIdSet);
 
@@ -74,10 +79,9 @@ public class StoreService {
 
 
             for (FishBreadType fishBreadType : typeList) {
-                int price = dto.getItemList().stream().filter(v -> {
-                    Long id = Long.parseLong(v.split(":")[0]);
-                    return fishBreadType.getId().equals(id);
-                }).map(v -> Integer.parseInt(v.split(":")[1])).findFirst().orElse(0);
+                int price = itemList.stream()
+                        .filter(v -> v.getFishBreadTypeId().equals(fishBreadType.getId()))
+                        .map(StoreDto.ItemAddDto::getPrice).findFirst().orElse(0);
                 StoreInfoFishBreadType info = StoreInfoFishBreadType.builder().price(price).fishBreadType(fishBreadType).build();
                 infoList.add(info);
             }
