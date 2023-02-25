@@ -12,6 +12,7 @@ import com.example.bbangeobung.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private static final String ADMIN_TOKEN= "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";;
+
+    @Value("${admin_token}")
+    private String ADMIN_TOKEN;
 
     public UserResponseDto signup(SignupRequestDto signupRequestDto) {
 
@@ -51,7 +54,7 @@ public class UserService {
             role = UserRoleEnum.ADMIN;
         }
 
-        User user = new User(username, password, email, role);
+        User user = User.builder().email(email).username(username).password(password).role(role).build();
         user = userRepository.save(user);
 
         return UserResponseDto.builder()

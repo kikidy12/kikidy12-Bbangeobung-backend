@@ -7,6 +7,7 @@ import com.example.bbangeobung.dto.UserRequestDto;
 import com.example.bbangeobung.dto.UserResponseDto;
 import com.example.bbangeobung.security.UserDetailsImpl;
 import com.example.bbangeobung.service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,12 +27,14 @@ public class UserController {
 
     // 회원가입 하기
     @PostMapping("/user/signup")
+    @SecurityRequirements()
     public ResponseDto<UserResponseDto> signup(SignupRequestDto signupRequestDto) {
         return ResponseDto.of(HttpStatus.OK, "회원가입 성공", userService.signup(signupRequestDto));
     }
 
     // 로그인 하기
     @PostMapping("/user/login")
+    @SecurityRequirements()
     public ResponseDto<UserResponseDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         userService.login(loginRequestDto, response);
         return ResponseDto.of(HttpStatus.OK, "회원가입 성공", userService.login(loginRequestDto, response));
