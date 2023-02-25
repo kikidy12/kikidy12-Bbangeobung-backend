@@ -24,6 +24,8 @@ public class ReviewReport extends Timestamped {
     Review review;
 
     public ReviewReport(String reason, User user, Review review) {
-
+        this.reason = reason;
+        this.user = user;
+        this.review = review;
     }
 }
