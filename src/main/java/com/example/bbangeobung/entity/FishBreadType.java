@@ -18,6 +18,7 @@ public class FishBreadType extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "fishBreadType", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -27,5 +28,9 @@ public class FishBreadType extends Timestamped {
     public FishBreadType(String name, Set<StoreInfoFishBreadType> infoFishBreadTypes) {
         this.name = name;
         this.infoFishBreadTypes = infoFishBreadTypes;
+    }
+
+    public void update(String name) {
+        this.name = name;
     }
 }
