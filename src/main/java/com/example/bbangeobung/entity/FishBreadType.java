@@ -28,4 +28,8 @@ public class FishBreadType extends Timestamped {
         this.name = name;
         this.infoFishBreadTypes = infoFishBreadTypes;
     }
+
+    public void update(String name) {
+        this.name = name;
+    }
 }
