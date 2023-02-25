@@ -3,6 +3,7 @@ package com.example.bbangeobung.controller;
 import com.example.bbangeobung.dto.LoginRequestDto;
 import com.example.bbangeobung.dto.SignupRequestDto;
 import com.example.bbangeobung.dto.UserRequestDto;
+import com.example.bbangeobung.entity.User;
 import com.example.bbangeobung.security.UserDetailsImpl;
 import com.example.bbangeobung.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -37,17 +38,26 @@ public class UserController {
     }
 
 
-    // 마이페이지
+     // 로그아웃 처리
     @GetMapping("/user")
     public ModelAndView myPage() {
         return new ModelAndView("user");
     }
 
-//    @PutMapping("/user")
-//    public String update(@PathVariable Long id, @RequestBody UserRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-//        return userService.userUpdate(id,requestDto,userDetails.getUser() );
-//    }
+    // 마이페이지 이름 수정
+    @PutMapping("/user")
+    public String update( @RequestBody UserRequestDto requestDto, HttpServletResponse response){
+        return userService.userUpdate(requestDto,response);
 
+    }
+
+
+
+    // 회원 삭제
+    public String delete(@PathVariable Long id){
+        userService.UserDelete(id);
+        return "redirect:/api/user/login";
+    }
 
 
 

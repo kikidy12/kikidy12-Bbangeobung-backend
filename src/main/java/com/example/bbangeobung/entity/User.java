@@ -1,5 +1,6 @@
 package com.example.bbangeobung.entity;
 
+import com.example.bbangeobung.dto.UserRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,10 @@ public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    //닉네임 추가
+    @Column(nullable = false)
+    private String nikName;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -32,10 +37,20 @@ public class User extends Timestamped {
     @OneToMany
     private Set<Store> stores;
 
-    public User(String email, String username, String password, UserRoleEnum role) {
+
+    public User(String nikName, String email, String username, String password, UserRoleEnum role) {
+        this.nikName = nikName;
         this.email = email;
         this.username = username;
         this.password = password;
         this.role = role;
     }
+
+    public void update(UserRequestDto requestDto){
+        this.nikName = requestDto.getNikName();
+        this.email = requestDto.getEmail();
+    }
+
+
+
 }

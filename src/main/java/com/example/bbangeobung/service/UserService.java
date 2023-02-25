@@ -7,13 +7,12 @@ import com.example.bbangeobung.entity.User;
 import com.example.bbangeobung.entity.UserRoleEnum;
 import com.example.bbangeobung.jwt.JwtUtil;
 import com.example.bbangeobung.repository.UserRepository;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Setter
@@ -25,9 +24,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private static final String ADMIN_TOKEN= "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";;
 
+    @Transactional
     public void signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
+        String nikName = signupRequestDto.getNikName();
 
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
@@ -45,13 +46,19 @@ public class UserService {
             }
             role = UserRoleEnum.ADMIN;
         }
+        //닉네임 중복확인
+        Optional<User> nikfound = userRepository.findByNikName(nikName);
+        if (nikfound.isPresent()) {
+            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+        }
 
-        User user = new User(username, password, email, role);
+        User user = new User(username, password, email,nikName, role);
         userRepository.save(user);
 
 
     }
 
+    @Transactional
     public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
@@ -68,10 +75,22 @@ public class UserService {
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
     }
-//
-//
-//    public String userUpdate(Long id, UserRequestDto requestDto, User user) {
-//
-//
-//    }
+
+    @Transactional
+    public String userUpdate(UserRequestDto requestDto) {
+
+        String nikName = requestDto.getNikName();
+        String email = requestDto.getEmail();
+
+        Optional<User> nikfound = userRepository.findByNikName(nikName);
+        if (nikfound.isPresent()) {
+            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+        }
+
+    }
+
+    @Transactional
+    public void UserDelete(Long id) {
+        userRepository.deleteById(id);
+    }
 }
