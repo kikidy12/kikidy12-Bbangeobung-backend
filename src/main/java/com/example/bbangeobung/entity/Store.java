@@ -1,11 +1,15 @@
 package com.example.bbangeobung.entity;
 
+import com.example.bbangeobung.dto.StoreDto;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static javax.persistence.FetchType.*;
@@ -29,4 +33,32 @@ public class Store extends Timestamped {
     private Set<StoreInfoFishBreadType> infoFishBreadTypes;
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StoreReport> reviewReports;
+
+    @Builder
+    public Store(Double latitude, Double longitude, String imageURL, String content, User user, Set<StoreInfoFishBreadType> infoFishBreadTypes) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.imageURL = imageURL;
+        this.content = content;
+        this.user = user;
+        this.infoFishBreadTypes = infoFishBreadTypes;
+    }
+
+    public void addInfoFishBreadTypes(StoreInfoFishBreadType storeInfoFishBreadType) {
+        this.infoFishBreadTypes.add(storeInfoFishBreadType);
+        if (!storeInfoFishBreadType.getStore().equals(this)) {
+            storeInfoFishBreadType.setStore(this);
+        }
+    }
+
+    public List<StoreDto.ItemDto> makeItemMapDto() {
+        if (this.infoFishBreadTypes == null)
+            return new ArrayList<>();
+        return this.infoFishBreadTypes.stream().map(v ->
+                StoreDto.ItemDto
+                        .builder()
+                        .name(v.fishBreadType.getName())
+                        .price(v.getPrice())
+                        .build()).toList();
+    }
 }
