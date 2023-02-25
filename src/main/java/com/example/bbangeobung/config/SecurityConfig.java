@@ -49,10 +49,10 @@ public class SecurityConfig {
 
                 .authorizeRequests()
                 .antMatchers("/api/user/signup", "/api/user/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/store").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/store/").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/store/{storeId}").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/fishBreadType/{fishBreadTypeId}").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/fishBreadType").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/fishBreadType/").permitAll()
                 .antMatchers("/api/**").authenticated()
 
                 .and()
