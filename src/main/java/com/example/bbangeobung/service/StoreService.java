@@ -3,10 +3,7 @@ package com.example.bbangeobung.service;
 import com.example.bbangeobung.common.CustomClientException;
 import com.example.bbangeobung.common.dto.ResponseDto;
 import com.example.bbangeobung.dto.StoreDto;
-import com.example.bbangeobung.entity.FishBreadType;
-import com.example.bbangeobung.entity.Store;
-import com.example.bbangeobung.entity.StoreInfoFishBreadType;
-import com.example.bbangeobung.entity.User;
+import com.example.bbangeobung.entity.*;
 import com.example.bbangeobung.repository.FishBreadTypeRepository;
 import com.example.bbangeobung.repository.StoreInfoFishBreadTypeRepository;
 import com.example.bbangeobung.repository.StoreRepository;
@@ -119,4 +116,14 @@ public class StoreService {
         }
     }
 
+    @Transactional
+    public void deleteStore(Long id, User user) {
+        Store store = storeRepository.findByIdJPQL(id).orElseThrow(
+                () -> new CustomClientException("없는 store입니다.")
+        );
+
+        if (!user.getRole().equals(UserRoleEnum.ADMIN) || !user.getId().equals(store.getUser().getId())) {
+            throw new CustomClientException("삭제할 권한이 없습니다.");
+        }
+    }
 }
