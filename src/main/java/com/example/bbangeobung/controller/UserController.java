@@ -7,6 +7,7 @@ import com.example.bbangeobung.dto.UserRequestDto;
 import com.example.bbangeobung.dto.UserResponseDto;
 import com.example.bbangeobung.security.UserDetailsImpl;
 import com.example.bbangeobung.service.UserService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class UserController {
     // 회원가입 하기
     @PostMapping("/user/signup")
     @SecurityRequirements()
-    public ResponseDto<UserResponseDto> signup(SignupRequestDto signupRequestDto) {
+    public ResponseDto<UserResponseDto> signup(@RequestBody SignupRequestDto signupRequestDto) {
         return ResponseDto.of(HttpStatus.OK, "회원가입 성공", userService.signup(signupRequestDto));
     }
 
@@ -40,17 +41,25 @@ public class UserController {
     }
 
 
-    // 마이페이지
-    @GetMapping("/user")
-    public ModelAndView myPage() {
-        return new ModelAndView("user");
-    }
-
-//    @PutMapping("/user")
-//    public String update(@PathVariable Long id, @RequestBody UserRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-//        return userService.userUpdate(id,requestDto,userDetails.getUser() );
+//     // 로그아웃 처리
+//    @GetMapping("/user")
+//    public ModelAndView myPage() {
+//        return new ModelAndView("user");
 //    }
 
+    // 마이페이지 이름 수정
+    @PutMapping("/user")
+    public ResponseDto<UserResponseDto> update(@RequestBody UserRequestDto requestDto, @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        return ResponseDto.of(HttpStatus.OK,"수정되었습니다.",userService.update(requestDto,userDetails.getUser()));
+
+    }
+
+//    // 회원 삭제
+//    public String delete(@PathVariable Long id){
+//        userService.UserDelete(id);
+//        return "redirect:/api/user/login";
+//    }
 
 
 

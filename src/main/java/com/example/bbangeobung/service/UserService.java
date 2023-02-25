@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -36,14 +37,13 @@ public class UserService {
 
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
+        String email = signupRequestDto.getEmail();
 
         // 회원 중복 확인
-        Optional<User> found = userRepository.findByUsername(username);
+        Optional<User> found = userRepository.findByEmail(email);
         if (found.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+            throw new IllegalArgumentException("중복된 이메일이 존재합니다.");
         }
-
-        String email = signupRequestDto.getEmail();
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
@@ -58,6 +58,7 @@ public class UserService {
         user = userRepository.save(user);
 
         return UserResponseDto.builder()
+                .username(user.getUsername())
                 .id(user.getId())
                 .email(user.getEmail())
                 .role(user.getRole())
@@ -83,13 +84,43 @@ public class UserService {
         return UserResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
+                .username(user.getUsername())
                 .role(user.getRole())
                 .build();
     }
-//
-//
-//    public String userUpdate(Long id, UserRequestDto requestDto, User user) {
-//
-//
+
+    @Transactional
+    public UserResponseDto update(UserRequestDto requestDto, User user) {
+        String username = requestDto.getUsername();
+        String password = requestDto.getNewPassword();
+        String currentPassword = requestDto.getCurrentPassword();// 현재 db에 있는 비번
+
+        if (username != null && !username.isEmpty()){
+            user.setUsername(username);
+        }
+        if (currentPassword != null && password != null &&  !password.isEmpty() && !currentPassword.isEmpty()){
+            //string 암호화
+            password = passwordEncoder.encode(password);
+            //사용자의 비번과 db의 비번 비교
+//            this.passwordEncoder.matches(currentPassword,user.getPassword());
+            if (this.passwordEncoder.matches(currentPassword,user.getPassword())){
+                user.setPassword(password);
+            }else{
+                throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            }
+
+        }
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .role(user.getRole())
+                .build();
+    }
+
+
+//    @Transactional
+//    public void UserDelete(Long id) {
+//        userRepository.deleteById(id);
 //    }
 }
