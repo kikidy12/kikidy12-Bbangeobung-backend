@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,8 +38,8 @@ public class StoreDto {
         private MultipartFile imageFile;
 
         @Schema(
-                defaultValue = "[{\"fishBreadTypeId\": 1, \"fishBreadTypeName\": \"팥붕어빵\", \"price\": 1000}]",
-                description = "fishBreadTypeId: 붕어빵종류의 아이디\nfishBreadTypeName: 붕어빵 종류\nprice:붕어빵 가격"
+                defaultValue = "[{\"fishBreadTypeId\": 1, \"price\": 1000}]",
+                description = "fishBreadTypeId: 붕어빵종류의 아이디\nprice:붕어빵 가격"
         )
         private String jsonList;
         @Builder
@@ -52,6 +53,7 @@ public class StoreDto {
     }
 
     @Getter
+    @NoArgsConstructor
     public static class StoreRes {
 
         private Long id;
@@ -74,6 +76,7 @@ public class StoreDto {
     }
 
     @Getter
+    @NoArgsConstructor
     public static class ItemDto {
         private String name;
         private Integer price;
@@ -87,17 +90,15 @@ public class StoreDto {
 
 
     @Getter
+    @NoArgsConstructor
     public static class ItemAddDto {
         private Long fishBreadTypeId;
-
-        private String fishBreadTypeName;
 
         private Integer price;
 
         @Builder
-        public ItemAddDto(Long fishBreadTypeId, String fishBreadTypeName, Integer price) {
+        public ItemAddDto(Long fishBreadTypeId, Integer price) {
             this.fishBreadTypeId = fishBreadTypeId;
-            this.fishBreadTypeName = fishBreadTypeName;
             this.price = price;
         }
     }

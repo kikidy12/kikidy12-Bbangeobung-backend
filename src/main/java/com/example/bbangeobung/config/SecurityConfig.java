@@ -43,7 +43,6 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/user/signup", "/api/user/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/store/").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/store/").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/store/{storeId}").permitAll()
                 .antMatchers("/api/fishBreadType/**").permitAll()
                 .antMatchers("/api/**").authenticated()

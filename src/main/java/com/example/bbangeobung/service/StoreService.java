@@ -6,6 +6,7 @@ import com.example.bbangeobung.dto.StoreDto;
 import com.example.bbangeobung.entity.FishBreadType;
 import com.example.bbangeobung.entity.Store;
 import com.example.bbangeobung.entity.StoreInfoFishBreadType;
+import com.example.bbangeobung.entity.User;
 import com.example.bbangeobung.repository.FishBreadTypeRepository;
 import com.example.bbangeobung.repository.StoreInfoFishBreadTypeRepository;
 import com.example.bbangeobung.repository.StoreRepository;
@@ -65,7 +66,7 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreDto.StoreRes addStore(StoreDto.StoreAdd dto) {
+    public StoreDto.StoreRes addStore(StoreDto.StoreAdd dto, User user) {
         try {
             ObjectMapper objectMapper = new ObjectMapper().registerModule(new SimpleModule());
             List<StoreDto.ItemAddDto> itemList = objectMapper.readValue(dto.getJsonList(), new TypeReference<>() {});
@@ -93,6 +94,7 @@ public class StoreService {
                     .longitude(dto.getLongitude())
                     .content(dto.getContent())
                     .imageURL(imageUrl)
+                    .user(user)
                     .infoFishBreadTypes(new HashSet<>())
                     .build();
 
