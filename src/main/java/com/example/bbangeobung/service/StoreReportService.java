@@ -8,6 +8,7 @@ import com.example.bbangeobung.repository.StoreReportRepository;
 import com.example.bbangeobung.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class StoreReportService {
     private final StoreReportRepository storeReportRepository;
     private final StoreRepository storeRepository;
 
+    @Transactional(readOnly = true)
     public StoreReportListResponseDto getStoreReports() {
 
         StoreReportListResponseDto responseDto = new StoreReportListResponseDto();
@@ -31,6 +33,7 @@ public class StoreReportService {
     }
 
 
+    @Transactional
     public StoreReportResponseDto createStoreReport(Long storeId,String reason, User user) {
 
         Store store = storeRepository.findById(storeId).orElseThrow(

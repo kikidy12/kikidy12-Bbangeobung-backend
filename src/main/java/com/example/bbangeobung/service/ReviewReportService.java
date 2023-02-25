@@ -12,6 +12,7 @@ import com.example.bbangeobung.repository.ReviewRepository;
 import com.example.bbangeobung.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class ReviewReportService {
     private final ReviewRepository reviewRepository;
     private final ReviewReportRepository reviewReportRepository;
 
+    @Transactional(readOnly = true)
     public ReviewReportListResponseDto getReviewReports() {
 
         ReviewReportListResponseDto responseDto = new ReviewReportListResponseDto();
@@ -37,6 +39,7 @@ public class ReviewReportService {
     }
 
 
+    @Transactional
     public ReviewReportResponseDto createReviewReport(Long reviewId,String reason, User user) {
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(
