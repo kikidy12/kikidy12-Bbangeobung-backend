@@ -1,8 +1,10 @@
 package com.example.bbangeobung.service;
 
+import com.example.bbangeobung.common.dto.ResponseDto;
 import com.example.bbangeobung.dto.LoginRequestDto;
 import com.example.bbangeobung.dto.SignupRequestDto;
 import com.example.bbangeobung.dto.UserRequestDto;
+import com.example.bbangeobung.dto.UserResponseDto;
 import com.example.bbangeobung.entity.User;
 import com.example.bbangeobung.entity.UserRoleEnum;
 import com.example.bbangeobung.jwt.JwtUtil;
@@ -11,11 +13,13 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
+@Service
 @Setter
 @RequiredArgsConstructor
 public class UserService {
@@ -25,7 +29,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private static final String ADMIN_TOKEN= "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";;
 
-    public void signup(SignupRequestDto signupRequestDto) {
+    public UserResponseDto signup(SignupRequestDto signupRequestDto) {
+
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
@@ -47,12 +52,16 @@ public class UserService {
         }
 
         User user = new User(username, password, email, role);
-        userRepository.save(user);
+        user = userRepository.save(user);
 
-
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
     }
 
-    public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public UserResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
@@ -67,6 +76,12 @@ public class UserService {
         }
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
+
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
     }
 //
 //

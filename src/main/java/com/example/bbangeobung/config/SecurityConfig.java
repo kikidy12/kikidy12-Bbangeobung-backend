@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .cors().disable()
 
                 .authorizeRequests()
-                .antMatchers("/api/signup", "/api/login").permitAll()
+                .antMatchers("/api/user/signup", "/api/user/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/store/").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/store/").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/store/{storeId}").permitAll()
