@@ -22,4 +22,10 @@ public class StoreReport extends Timestamped {
 
     @ManyToOne(fetch = LAZY)
     private Store store;
+
+    public StoreReport(String reason, User user, Store store) {
+        this.reason = reason;
+        this.user = user;
+        this.store = store;
+    }
 }

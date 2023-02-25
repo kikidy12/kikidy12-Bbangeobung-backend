@@ -37,14 +37,10 @@ public class ReviewReportService {
     }
 
 
-    public ReviewReportResponseDto createReviewReport(Long reviewId,String reason, String username) {
+    public ReviewReportResponseDto createReviewReport(Long reviewId,String reason, User user) {
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(
                 () -> new CustomClientException("리뷰가 존재하지 않습니다.")
-        );
-
-        User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new CustomClientException("사용자가 존재하지 않습니다.")
         );
 
         ReviewReport report = new ReviewReport(reason, user, review);
