@@ -2,14 +2,15 @@ package com.example.bbangeobung.dto;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
+@NoArgsConstructor
 public class UserRequestDto {
     private String username;
-
-    public String password;
+    public String newPassword;
     public String currentPassword;
 }
 
