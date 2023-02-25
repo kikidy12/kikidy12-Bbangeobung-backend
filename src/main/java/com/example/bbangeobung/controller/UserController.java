@@ -36,8 +36,7 @@ public class UserController {
     @PostMapping("/user/login")
     @SecurityRequirements()
     public ResponseDto<UserResponseDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        userService.login(loginRequestDto, response);
-        return ResponseDto.of(HttpStatus.OK, "회원가입 성공", userService.login(loginRequestDto, response));
+        return ResponseDto.of(HttpStatus.OK, "로그인 성공", userService.login(loginRequestDto, response));
     }
 
 
