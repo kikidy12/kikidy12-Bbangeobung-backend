@@ -1,6 +1,7 @@
 package com.example.bbangeobung.entity;
 
 import com.example.bbangeobung.dto.ReviewRequestDto;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,19 +29,39 @@ public class Review extends Timestamped {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ReviewReport> reviewReports;
 
-    //    public Review(ReviewRequestDto requestDto, User user) {
+    @ManyToOne(fetch = LAZY)
+    private Store store;
+
+//    public Review(ReviewRequestDto requestDto, User user) {
 //        this.user = user;
 //        this.message = requestDto.getMessage();
 //        this.imageURL = requestDto.getImageURL();
 //    }
-    public Review(ReviewRequestDto requestDto) {
+//
+//    public Review(ReviewRequestDto requestDto) {
+//        this.user = user;
+//        this.message = requestDto.getMessage();
+//        this.imageURL = requestDto.getImageURL();
+//    }
+
+    public Review(ReviewRequestDto requestDto, Store store, User user) {
         this.user = user;
+        this.store = store;
         this.message = requestDto.getMessage();
-        this.imageURL = requestDto.getImageURL();
+        this.imageURL = String.valueOf(requestDto.getImageURL());
     }
 
-    public void updateReview(ReviewRequestDto requestDto) {
-        this.message = requestDto.getMessage();
-        this.imageURL = requestDto.getImageURL();
+    @Builder
+    public Review(String message, String imageURL, User user, Store store) {
+        this.message = message;
+        this.imageURL = imageURL;
+        this.user = user;
+        this.store = store;
+    }
+
+    public void updateReview(Long id, String message, String imageURL) {
+        this.id = id;
+        this.message = message;
+        this.imageURL = imageURL;
     }
 }

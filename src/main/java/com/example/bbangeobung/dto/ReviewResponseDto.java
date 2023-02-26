@@ -3,6 +3,7 @@ package com.example.bbangeobung.dto;
 import com.example.bbangeobung.entity.Review;
 import com.example.bbangeobung.entity.ReviewReport;
 import com.example.bbangeobung.entity.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,4 +28,12 @@ public class ReviewResponseDto {
         this.imageURL = review.getImageURL();
         this.username = review.getUser().getUsername();
     }
+
+//    @Builder
+//    public ReviewResponseDto(Long id, String message, String imageURL, String username) {
+//        this.id = id;
+//        this.message = message;
+//        this.imageURL = imageURL;
+//        this.username = username;
+//    }
 }
