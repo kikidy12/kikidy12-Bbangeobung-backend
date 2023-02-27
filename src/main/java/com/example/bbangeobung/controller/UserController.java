@@ -69,12 +69,21 @@ public class UserController {
 
     // 회원 삭제
     @DeleteMapping("/user")
+    @Operation(summary = "회원 정보 수정", description = "회원 정보 수정/ 이름, 비밀번호 별도로 수정 가능 비밀번호를 변경하려면 newPassword, currentPassword는 같이 집어 넣어야함")
     public ResponseDto<UserResponseDto> delete(@Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
         userService.delete(userDetails.getUser());
         return ResponseDto.of(HttpStatus.OK,"삭제되었습니다.");
     }
 
 
+    // 회원 조회
+    @GetMapping("/user/info")
+    @Operation(summary = "회원 조회", description = "회원 조회, toekn필요")
+    public ResponseDto<UserResponseDto> getUser(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return ResponseDto.of(HttpStatus.OK, "조회 성공", userService.getUesr(userDetails.getUser()));
+    }
 
 
 
