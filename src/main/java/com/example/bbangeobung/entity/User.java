@@ -23,6 +23,7 @@ public class User extends Timestamped {
 
     @Column(nullable = false)
     private String username;
+    private Long kakaoId;
 
     @Column(nullable = false)
     private String password;
@@ -34,6 +35,13 @@ public class User extends Timestamped {
     @OneToMany
     private Set<Store> stores;
 
+    public User(String email,Long kakaoId, String username, String password, UserRoleEnum role) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.kakaoId = kakaoId;
+    }
     @Builder
     public User(String email, String username, String password, UserRoleEnum role) {
         this.email = email;
@@ -42,7 +50,8 @@ public class User extends Timestamped {
         this.role = role;
     }
 
-//    public void UserUpdate(UserRequestDto requestDto) {
+
+    //    public void UserUpdate(UserRequestDto requestDto) {
 //        this.username = requestDto.getUsername();
 //        this.password = requestDto.getPassword();
 //        this.role = role;
@@ -54,4 +63,8 @@ public class User extends Timestamped {
         this.password = password;
     }
 
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
+    }
 }

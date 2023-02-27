@@ -5,8 +5,11 @@ import com.example.bbangeobung.dto.LoginRequestDto;
 import com.example.bbangeobung.dto.SignupRequestDto;
 import com.example.bbangeobung.dto.UserRequestDto;
 import com.example.bbangeobung.dto.UserResponseDto;
+import com.example.bbangeobung.jwt.JwtUtil;
 import com.example.bbangeobung.security.UserDetailsImpl;
+import com.example.bbangeobung.service.KakaoService;
 import com.example.bbangeobung.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -18,6 +21,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -28,6 +32,7 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/api")
 public class UserController {
     private final UserService userService;
+    private final KakaoService kakaoService;
 
 
     // 회원가입 하기
@@ -72,6 +77,19 @@ public class UserController {
     public ResponseDto<UserResponseDto> delete(@Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
         userService.delete(userDetails.getUser());
         return ResponseDto.of(HttpStatus.OK,"삭제되었습니다.");
+    }
+
+    @GetMapping("/kakao/callback")
+    public ResponseDto<UserResponseDto> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException{
+        // code: 카카오 서버로부터 받은 인가 코드
+        String createToken = kakaoService.kakaoLogin(code, response);
+
+        // Cookie 생성 및 직접 브라우저에 Set
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, createToken.substring(7));
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseDto.of(HttpStatus.OK,"카카오 로그인 되었습니다.");
     }
 
 
