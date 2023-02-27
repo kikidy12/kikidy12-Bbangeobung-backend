@@ -57,6 +57,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/api/fishBreadType/").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/review/{reviewId}").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/review/").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/comment/{commentId}").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/comment/").permitAll()
                 .antMatchers("/api/**").authenticated()
 
                 .and()

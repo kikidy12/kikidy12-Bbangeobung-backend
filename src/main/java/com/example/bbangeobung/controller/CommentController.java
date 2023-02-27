@@ -32,12 +32,14 @@ public class CommentController {
     }
 
     @GetMapping("/{commentId}")
+    @SecurityRequirements()
     @Operation(summary = "댓글 조회", description = "댓글 조회")
     public ResponseDto<CommentResponseDto> getComment(@PathVariable Long commentId) {
         return ResponseDto.of(HttpStatus.OK, "댓글 조회 성공", commentService.getComment(commentId));
     }
 
     @GetMapping("/")
+    @SecurityRequirements()
     @Operation(summary = "댓글 리스트 조회", description = "댓글 리스트 조회")
     public ResponseDto<List<CommentResponseDto>> getCommentList(@RequestParam Long storeId) {
         return ResponseDto.of(HttpStatus.OK, "댓글 리스트 조회 성공", commentService.getCommentList(storeId));
