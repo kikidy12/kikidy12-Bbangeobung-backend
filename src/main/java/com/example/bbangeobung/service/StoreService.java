@@ -45,9 +45,9 @@ public class StoreService {
                 .build();
     }
 
-    public List<StoreDto.StoreRes> getStores() {
+    public List<StoreDto.StoreRes> getStores(Long sfId) {
 
-        List<Store> stores = storeRepository.findAllJPQL();
+        List<Store> stores = storeRepository.findAllJPQL(sfId);
 
         return stores.stream().map(store ->
                 StoreDto.StoreRes
