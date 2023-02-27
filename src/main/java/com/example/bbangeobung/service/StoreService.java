@@ -67,7 +67,7 @@ public class StoreService {
         try {
             ObjectMapper objectMapper = new ObjectMapper().registerModule(new SimpleModule());
             List<StoreDto.ItemAddDto> itemList = objectMapper.readValue(dto.getJsonList(), new TypeReference<>() {});
-            String imageUrl = s3Uploader.upload(dto.getImageFile());
+//            String imageUrl = s3Uploader.upload(dto.getImageFile());
 
             Set<Long> fishBreadTypeIdSet = itemList.stream().map(StoreDto.ItemAddDto::getFishBreadTypeId).collect(Collectors.toSet());
 
@@ -87,10 +87,10 @@ public class StoreService {
 
             Store store = Store
                     .builder()
-                    .latitude(dto.getLatitude())
-                    .longitude(dto.getLongitude())
-                    .content(dto.getContent())
-                    .imageURL(imageUrl)
+//                    .latitude(dto.getLatitude())
+//                    .longitude(dto.getLongitude())
+//                    .content(dto.getContent())
+//                    .imageURL(imageUrl)
                     .user(user)
                     .infoFishBreadTypes(new HashSet<>())
                     .build();
@@ -122,8 +122,10 @@ public class StoreService {
                 () -> new CustomClientException("없는 store입니다.")
         );
 
-        if (!user.getRole().equals(UserRoleEnum.ADMIN) || !user.getId().equals(store.getUser().getId())) {
+        if (!user.getRole().equals(UserRoleEnum.ADMIN) && !user.getId().equals(store.getUser().getId())) {
             throw new CustomClientException("삭제할 권한이 없습니다.");
         }
+
+        storeRepository.delete(store);
     }
 }
