@@ -1,5 +1,6 @@
 package com.example.bbangeobung.jwt;
 
+import com.example.bbangeobung.common.dto.ErrorResponse;
 import com.example.bbangeobung.dto.SecurityExceptionDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,8 +52,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     public void jwtExceptionHandler(HttpServletResponse response, String msg, int statusCode) {
         response.setStatus(statusCode);
         response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         try {
-            String json = new ObjectMapper().writeValueAsString(new SecurityExceptionDto(statusCode, msg));
+            String json = new ObjectMapper().writeValueAsString(new ErrorResponse(statusCode, "인증실패"));
             response.getWriter().write(json);
         } catch (Exception e) {
             log.error(e.getMessage());
