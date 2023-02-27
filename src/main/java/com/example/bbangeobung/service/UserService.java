@@ -120,5 +120,14 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public UserResponseDto getUesr(User user) {
+        return  UserResponseDto.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .id(user.getId())
+                .role(user.getRole())
+                .build();
+    }
+
 
 }
