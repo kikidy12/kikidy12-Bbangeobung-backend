@@ -3,6 +3,8 @@ package com.example.bbangeobung.service;
 import com.example.bbangeobung.common.CustomClientException;
 import com.example.bbangeobung.common.dto.ResponseDto;
 import com.example.bbangeobung.dto.StoreDto;
+import com.example.bbangeobung.dto.StoreItemDto;
+import com.example.bbangeobung.dto.V2StoreDto;
 import com.example.bbangeobung.entity.*;
 import com.example.bbangeobung.repository.FishBreadTypeRepository;
 import com.example.bbangeobung.repository.StoreInfoFishBreadTypeRepository;
@@ -45,6 +47,23 @@ public class StoreService {
                 .build();
     }
 
+    public V2StoreDto.StoreRes getV2Store(Long id) {
+
+        Store store = storeRepository.findByIdJPQLV2(id).orElseThrow(
+                () -> new CustomClientException("없는 store입니다.")
+        );
+
+        return V2StoreDto.StoreRes
+                .builder()
+                .id(store.getId())
+                .latitude(store.getLatitude())
+                .longitude(store.getLongitude())
+                .content(store.getContent())
+                .imageURL(store.getImageURL())
+                .itemList(store.makeStoreItemMapDto())
+                .build();
+    }
+
     public List<StoreDto.StoreRes> getStores(Long sfId) {
 
         List<Store> stores = storeRepository.findAllJPQL(sfId);
@@ -61,6 +80,24 @@ public class StoreService {
                         .build()
         ).toList();
     }
+
+    public List<V2StoreDto.StoreRes> getStoreByItemName(String itemName) {
+
+        List<Store> stores = storeRepository.findAllByItemName(itemName);
+
+        return stores.stream().map(store ->
+                V2StoreDto.StoreRes
+                        .builder()
+                        .id(store.getId())
+                        .latitude(store.getLatitude())
+                        .longitude(store.getLongitude())
+                        .content(store.getContent())
+                        .imageURL(store.getImageURL())
+                        .itemList(store.makeStoreItemMapDto())
+                        .build()
+        ).toList();
+    }
+
 
     @Transactional
     public StoreDto.StoreRes addStore(StoreDto.StoreAdd dto, User user) {
@@ -110,6 +147,52 @@ public class StoreService {
                     .content(store.getContent())
                     .imageURL(store.getImageURL())
                     .itemList(store.makeItemMapDto())
+                    .build();
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Transactional
+    public V2StoreDto.StoreRes addV2Store(V2StoreDto.StoreAdd dto, User user) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper().registerModule(new SimpleModule());
+            List<StoreItemDto.StoreItemAdd> addItemList = objectMapper.readValue(dto.getJsonList(), new TypeReference<>() {});
+
+            System.out.println(addItemList);
+            String imageUrl = s3Uploader.upload(dto.getImageFile());
+
+
+            Store store = Store
+                    .builder()
+                    .latitude(dto.getLatitude())
+                    .longitude(dto.getLongitude())
+                    .content(dto.getContent())
+                    .imageURL(imageUrl)
+                    .user(user)
+                    .storeItems(new HashSet<>())
+                    .build();
+
+            store = storeRepository.save(store);
+
+            List<StoreItem> itemList = addItemList.stream().map(
+                    v -> StoreItem.builder().price(v.getPrice()).name(v.getName()).build()
+            ).toList();
+
+            for (StoreItem storeItem : itemList) {
+                storeItem.setStore(store);
+            }
+
+
+            return V2StoreDto.StoreRes
+                    .builder()
+                    .id(store.getId())
+                    .latitude(store.getLatitude())
+                    .longitude(store.getLongitude())
+                    .content(store.getContent())
+                    .imageURL(store.getImageURL())
+                    .itemList(store.makeStoreItemMapDto())
                     .build();
         }catch (IOException e) {
             throw new RuntimeException(e);

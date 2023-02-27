@@ -1,6 +1,8 @@
 package com.example.bbangeobung.entity;
 
 import com.example.bbangeobung.dto.StoreDto;
+import com.example.bbangeobung.dto.StoreItemDto;
+import com.example.bbangeobung.dto.V2StoreDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,14 +40,16 @@ public class Store extends Timestamped {
     private Set<StoreItem> storeItems;
 
     @Builder
-    public Store(Double latitude, Double longitude, String imageURL, String content, User user, Set<StoreInfoFishBreadType> infoFishBreadTypes) {
+    public Store(Double latitude, Double longitude, String imageURL, String content, User user, Set<StoreInfoFishBreadType> infoFishBreadTypes, Set<StoreItem> storeItems) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.imageURL = imageURL;
         this.content = content;
         this.user = user;
         this.infoFishBreadTypes = infoFishBreadTypes;
+        this.storeItems = storeItems;
     }
+
 
     public void addInfoFishBreadTypes(StoreInfoFishBreadType storeInfoFishBreadType) {
         this.infoFishBreadTypes.add(storeInfoFishBreadType);
@@ -68,6 +72,17 @@ public class Store extends Timestamped {
                 StoreDto.ItemDto
                         .builder()
                         .name(v.fishBreadType.getName())
+                        .price(v.getPrice())
+                        .build()).toList();
+    }
+
+    public List<StoreItemDto.StoreItemRes> makeStoreItemMapDto() {
+        if (this.storeItems == null)
+            return new ArrayList<>();
+        return this.storeItems.stream().map(v ->
+                StoreItemDto.StoreItemRes
+                        .builder()
+                        .name(v.getName())
                         .price(v.getPrice())
                         .build()).toList();
     }
