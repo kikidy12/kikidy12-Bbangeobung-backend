@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,7 +36,7 @@ public class StoreV2Controller {
     public ResponseDto<List<V2StoreDto.StoreRes>> getStores(
             @RequestParam(required = false) StoreItemNameEnum itemName
     ) {
-        return ResponseDto.of(HttpStatus.OK, "조회 성공", storeService.getStoreByItemName(itemName.getName()));
+        return ResponseDto.of(HttpStatus.OK, "조회 성공", storeService.getStoreByItemName(itemName == null ? null : itemName.getName()));
     }
 
     @GetMapping("/{storeId}")
