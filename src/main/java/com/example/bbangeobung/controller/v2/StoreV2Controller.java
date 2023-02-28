@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,9 +33,10 @@ public class StoreV2Controller {
             "키워드에 걸리는 아이템의 가격순으로 정렬한다")
     @SecurityRequirements()
     public ResponseDto<List<V2StoreDto.V2StoreRes>> getStores(
-            @RequestParam(required = false) StoreItemNameEnum itemName
+            @RequestParam(required = false) StoreItemNameEnum itemName,
+            @RequestParam(required = false) Long userId
     ) {
-        return ResponseDto.of(HttpStatus.OK, "조회 성공", storeService.getStoreByItemName(itemName == null ? null : itemName.getName()));
+        return ResponseDto.of(HttpStatus.OK, "조회 성공", storeService.getStoreByItemName(itemName == null ? null : itemName.getName(), userId));
     }
 
 
@@ -49,8 +51,10 @@ public class StoreV2Controller {
     @GetMapping("/{storeId}")
     @Operation(summary = "상점 조회", description = "상점 조회")
     @SecurityRequirements()
-    public ResponseDto<V2StoreDto.V2StoreRes> getStore(@PathVariable Long storeId) {
-        return ResponseDto.of(HttpStatus.OK, "조회 성공", storeService.getV2Store(storeId));
+    public ResponseDto<V2StoreDto.V2StoreRes> getStore(
+            @PathVariable Long storeId, @RequestParam(required = false) Long userId
+    ) {
+        return ResponseDto.of(HttpStatus.OK, "조회 성공", storeService.getV2Store(storeId, userId));
     }
 
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

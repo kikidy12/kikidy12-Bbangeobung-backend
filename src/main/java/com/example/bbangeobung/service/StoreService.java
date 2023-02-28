@@ -53,15 +53,16 @@ public class StoreService {
 
         List<Store> stores = storeRepository.findByUserIdJPQL(user.getId());
 
-        return getStoreRes(stores);
+        return getStoreRes(stores, user.getId());
     }
 
-    public V2StoreDto.V2StoreRes getV2Store(Long id) {
+    public V2StoreDto.V2StoreRes getV2Store(Long id, Long userId) {
 
         Store store = storeRepository.findByIdJPQLV2(id).orElseThrow(
                 () -> new CustomClientException("없는 store입니다.")
         );
 
+        Boolean isMyLike = store.getStoreLikeUsers().stream().anyMatch(v -> v.getUser().getId().equals(userId));
         int likeUserCount = ObjectUtils.defaultIfNull(store.getStoreLikeUsers(), new ArrayList<StoreLikeUsers>()).size();
 
         return V2StoreDto.V2StoreRes
@@ -73,6 +74,7 @@ public class StoreService {
                 .imageURL(store.getImageURL())
                 .itemList(store.makeStoreItemMapDto())
                 .likeCount(likeUserCount)
+                .isMyLike(isMyLike)
                 .build();
     }
 
@@ -95,11 +97,11 @@ public class StoreService {
         }).toList();
     }
 
-    public List<V2StoreDto.V2StoreRes> getStoreByItemName(String itemName) {
+    public List<V2StoreDto.V2StoreRes> getStoreByItemName(String itemName, Long userId) {
 
         List<Store> stores = storeRepository.findAllByItemName(itemName);
 
-        return getStoreRes(stores);
+        return getStoreRes(stores, userId);
     }
 
 
@@ -221,8 +223,9 @@ public class StoreService {
 
 
     // 가게목록 dto변환
-    private List<V2StoreDto.V2StoreRes> getStoreRes(List<Store> stores) {
+    private List<V2StoreDto.V2StoreRes> getStoreRes(List<Store> stores, Long userId) {
         return stores.stream().map(store -> {
+            Boolean isMyLike = store.getStoreLikeUsers().stream().anyMatch(v -> v.getUser().getId().equals(userId));
             int likeUserCount = ObjectUtils.defaultIfNull(store.getStoreLikeUsers(), new ArrayList<StoreLikeUsers>()).size();
             return V2StoreDto.V2StoreRes
                     .builder()
@@ -233,6 +236,7 @@ public class StoreService {
                     .imageURL(store.getImageURL())
                     .itemList(store.makeStoreItemMapDto())
                     .likeCount(likeUserCount)
+                    .isMyLike(isMyLike)
                     .build();
         }).toList();
     }

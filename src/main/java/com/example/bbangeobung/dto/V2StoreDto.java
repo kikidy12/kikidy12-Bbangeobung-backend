@@ -48,13 +48,15 @@ public class V2StoreDto {
         private String content;
 
         private Integer likeCount;
+
+        private Boolean isMyLike;
         private List<StoreItemDto.StoreItemRes> itemList;
 
 
         @Builder
         public V2StoreRes(Long id, Double latitude, Double longitude,
                           String imageURL, String content, List<StoreItemDto.StoreItemRes> itemList,
-                          Integer likeCount
+                          Integer likeCount, Boolean isMyLike
         ) {
             this.id = id;
             this.latitude = latitude;
@@ -63,6 +65,7 @@ public class V2StoreDto {
             this.content = content;
             this.itemList = itemList;
             this.likeCount = likeCount;
+            this.isMyLike = isMyLike;
         }
     }
 }
