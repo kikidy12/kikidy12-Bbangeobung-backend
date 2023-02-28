@@ -28,7 +28,11 @@ public class CommentController {
     @Operation(summary = "댓글 등록", description = "댓글 등록")
     public ResponseDto<CommentResponseDto> createComment(@RequestBody CommentRequestDto requestDto,
                                                          @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseDto.of(HttpStatus.OK, "댓글 등록 성공", commentService.createComment(requestDto, userDetails.getUser()));
+
+        CommentResponseDto dto = commentService.createComment(requestDto, userDetails.getUser());
+
+        commentService.onCommentAdded(requestDto.getStoreId(), dto.getId());
+        return ResponseDto.of(HttpStatus.OK, "댓글 등록 성공", dto);
     }
 
     @GetMapping("/{commentId}")
