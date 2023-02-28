@@ -11,7 +11,7 @@ import java.util.List;
 public class V2StoreDto {
 
     @Getter
-    public static class StoreAdd {
+    public static class V2StoreAdd {
         @Schema(defaultValue = "37.4898", description = "위도")
         private Double latitude;
         @Schema(defaultValue = "126.8369", description = "경도")
@@ -28,7 +28,7 @@ public class V2StoreDto {
         )
         private String jsonList;
         @Builder
-        public StoreAdd(Double latitude, Double longitude, String content, MultipartFile imageFile, String jsonList) {
+        public V2StoreAdd(Double latitude, Double longitude, String content, MultipartFile imageFile, String jsonList) {
             this.latitude = latitude;
             this.longitude = longitude;
             this.content = content;
@@ -39,24 +39,30 @@ public class V2StoreDto {
 
     @Getter
     @NoArgsConstructor
-    public static class StoreRes {
+    public static class V2StoreRes {
 
         private Long id;
         private Double latitude;
         private Double longitude;
         private String imageURL;
         private String content;
+
+        private Integer likeCount;
         private List<StoreItemDto.StoreItemRes> itemList;
 
 
         @Builder
-        public StoreRes(Long id, Double latitude, Double longitude, String imageURL, String content, List<StoreItemDto.StoreItemRes> itemList) {
+        public V2StoreRes(Long id, Double latitude, Double longitude,
+                          String imageURL, String content, List<StoreItemDto.StoreItemRes> itemList,
+                          Integer likeCount
+        ) {
             this.id = id;
             this.latitude = latitude;
             this.longitude = longitude;
             this.imageURL = imageURL;
             this.content = content;
             this.itemList = itemList;
+            this.likeCount = likeCount;
         }
     }
 }

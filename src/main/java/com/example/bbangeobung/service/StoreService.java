@@ -1,22 +1,20 @@
 package com.example.bbangeobung.service;
 
 import com.example.bbangeobung.common.CustomClientException;
-import com.example.bbangeobung.common.dto.ResponseDto;
 import com.example.bbangeobung.dto.StoreDto;
 import com.example.bbangeobung.dto.StoreItemDto;
 import com.example.bbangeobung.dto.V2StoreDto;
 import com.example.bbangeobung.entity.*;
 import com.example.bbangeobung.repository.FishBreadTypeRepository;
-import com.example.bbangeobung.repository.StoreInfoFishBreadTypeRepository;
 import com.example.bbangeobung.repository.StoreRepository;
 import com.example.bbangeobung.util.S3Uploader;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,6 +34,8 @@ public class StoreService {
                 () -> new CustomClientException("없는 store입니다.")
         );
 
+        int likeUserCount = ObjectUtils.defaultIfNull(store.getStoreLikeUsers(), new ArrayList<StoreLikeUsers>()).size();
+
         return StoreDto.StoreRes
                 .builder()
                 .id(store.getId())
@@ -44,16 +44,27 @@ public class StoreService {
                 .content(store.getContent())
                 .imageURL(store.getImageURL())
                 .itemList(store.makeItemMapDto())
+                .likeCount(likeUserCount)
                 .build();
     }
 
-    public V2StoreDto.StoreRes getV2Store(Long id) {
+
+    public List<V2StoreDto.V2StoreRes> getStoreByMe(User user) {
+
+        List<Store> stores = storeRepository.findByUserIdJPQL(user.getId());
+
+        return getStoreRes(stores);
+    }
+
+    public V2StoreDto.V2StoreRes getV2Store(Long id) {
 
         Store store = storeRepository.findByIdJPQLV2(id).orElseThrow(
                 () -> new CustomClientException("없는 store입니다.")
         );
 
-        return V2StoreDto.StoreRes
+        int likeUserCount = ObjectUtils.defaultIfNull(store.getStoreLikeUsers(), new ArrayList<StoreLikeUsers>()).size();
+
+        return V2StoreDto.V2StoreRes
                 .builder()
                 .id(store.getId())
                 .latitude(store.getLatitude())
@@ -61,6 +72,7 @@ public class StoreService {
                 .content(store.getContent())
                 .imageURL(store.getImageURL())
                 .itemList(store.makeStoreItemMapDto())
+                .likeCount(likeUserCount)
                 .build();
     }
 
@@ -68,34 +80,26 @@ public class StoreService {
 
         List<Store> stores = storeRepository.findAllJPQL(sfId);
 
-        return stores.stream().map(store ->
-                StoreDto.StoreRes
-                        .builder()
-                        .id(store.getId())
-                        .latitude(store.getLatitude())
-                        .longitude(store.getLongitude())
-                        .content(store.getContent())
-                        .imageURL(store.getImageURL())
-                        .itemList(store.makeItemMapDto())
-                        .build()
-        ).toList();
+        return stores.stream().map(store -> {
+            int likeUserCount = ObjectUtils.defaultIfNull(store.getStoreLikeUsers(), new ArrayList<StoreLikeUsers>()).size();
+            return StoreDto.StoreRes
+                    .builder()
+                    .id(store.getId())
+                    .latitude(store.getLatitude())
+                    .longitude(store.getLongitude())
+                    .content(store.getContent())
+                    .imageURL(store.getImageURL())
+                    .itemList(store.makeItemMapDto())
+                    .likeCount(likeUserCount)
+                    .build();
+        }).toList();
     }
 
-    public List<V2StoreDto.StoreRes> getStoreByItemName(String itemName) {
+    public List<V2StoreDto.V2StoreRes> getStoreByItemName(String itemName) {
 
         List<Store> stores = storeRepository.findAllByItemName(itemName);
 
-        return stores.stream().map(store ->
-                V2StoreDto.StoreRes
-                        .builder()
-                        .id(store.getId())
-                        .latitude(store.getLatitude())
-                        .longitude(store.getLongitude())
-                        .content(store.getContent())
-                        .imageURL(store.getImageURL())
-                        .itemList(store.makeStoreItemMapDto())
-                        .build()
-        ).toList();
+        return getStoreRes(stores);
     }
 
 
@@ -147,6 +151,7 @@ public class StoreService {
                     .content(store.getContent())
                     .imageURL(store.getImageURL())
                     .itemList(store.makeItemMapDto())
+                    .likeCount(0)
                     .build();
         }catch (IOException e) {
             throw new RuntimeException(e);
@@ -155,7 +160,7 @@ public class StoreService {
 
 
     @Transactional
-    public V2StoreDto.StoreRes addV2Store(V2StoreDto.StoreAdd dto, User user) {
+    public V2StoreDto.V2StoreRes addV2Store(V2StoreDto.V2StoreAdd dto, User user) {
         try {
             ObjectMapper objectMapper = new ObjectMapper().registerModule(new SimpleModule());
             List<StoreItemDto.StoreItemAdd> addItemList = objectMapper.readValue(dto.getJsonList(), new TypeReference<>() {});
@@ -185,13 +190,14 @@ public class StoreService {
             }
 
 
-            return V2StoreDto.StoreRes
+            return V2StoreDto.V2StoreRes
                     .builder()
                     .id(store.getId())
                     .latitude(store.getLatitude())
                     .longitude(store.getLongitude())
                     .content(store.getContent())
                     .imageURL(store.getImageURL())
+                    .likeCount(0)
                     .itemList(store.makeStoreItemMapDto())
                     .build();
         }catch (IOException e) {
@@ -210,5 +216,24 @@ public class StoreService {
         }
 
         storeRepository.delete(store);
+    }
+
+
+
+    // 가게목록 dto변환
+    private List<V2StoreDto.V2StoreRes> getStoreRes(List<Store> stores) {
+        return stores.stream().map(store -> {
+            int likeUserCount = ObjectUtils.defaultIfNull(store.getStoreLikeUsers(), new ArrayList<StoreLikeUsers>()).size();
+            return V2StoreDto.V2StoreRes
+                    .builder()
+                    .id(store.getId())
+                    .latitude(store.getLatitude())
+                    .longitude(store.getLongitude())
+                    .content(store.getContent())
+                    .imageURL(store.getImageURL())
+                    .itemList(store.makeStoreItemMapDto())
+                    .likeCount(likeUserCount)
+                    .build();
+        }).toList();
     }
 }

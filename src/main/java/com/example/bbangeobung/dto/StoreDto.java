@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,17 +62,20 @@ public class StoreDto {
         private Double longitude;
         private String imageURL;
         private String content;
+
+        private Integer likeCount;
         private List<ItemDto> itemList;
 
 
         @Builder
-        public StoreRes(Long id, Double latitude, Double longitude, String imageURL, String content, List<ItemDto> itemList) {
+        public StoreRes(Long id, Double latitude, Double longitude, String imageURL, String content, List<ItemDto> itemList, Integer likeCount) {
             this.id = id;
             this.latitude = latitude;
             this.longitude = longitude;
             this.imageURL = imageURL;
             this.content = content;
             this.itemList = itemList;
+            this.likeCount = likeCount;
         }
     }
 
