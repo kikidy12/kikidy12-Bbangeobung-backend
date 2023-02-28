@@ -1,8 +1,13 @@
 package com.example.bbangeobung.config;
 
+//import com.example.bbangeobung.auth.CustomOAuth2UserService;
+import com.example.bbangeobung.auth.CustomOAuth2UserService;
 import com.example.bbangeobung.cors.CorsFilter;
+import com.example.bbangeobung.entity.UserRoleEnum;
 import com.example.bbangeobung.jwt.JwtAuthFilter;
 import com.example.bbangeobung.jwt.JwtUtil;
+import com.nimbusds.oauth2.sdk.Role;
+import lombok.AllArgsConstructor;
 import com.example.bbangeobung.oauth.CustomAuthenticationSuccessHandler;
 import com.example.bbangeobung.oauth.OauthService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +16,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +33,7 @@ import java.util.List;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -84,7 +92,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
