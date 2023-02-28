@@ -41,6 +41,11 @@ public class FishBreadTypeService {
 
     @Transactional
     public FishBreadTypeDto.FishBreadTypeRes addFishBreadType(FishBreadTypeDto.FishBreadTypeAdd dto) {
+
+        if (fishBreadTypeRepository.findByName(dto.getName()).isPresent()) {
+            throw new CustomClientException("이미 등록된 붕어빵 종류입니다.");
+        }
+
         FishBreadType fishBreadType = FishBreadType.builder().name(dto.getName()).build();
 
         fishBreadType = fishBreadTypeRepository.save(fishBreadType);
