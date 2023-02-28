@@ -1,6 +1,7 @@
 package com.example.bbangeobung.oauth;
 
 import com.example.bbangeobung.entity.User;
+import com.example.bbangeobung.entity.UserRoleEnum;
 import com.example.bbangeobung.jwt.JwtUtil;
 import com.example.bbangeobung.repository.UserRepository;
 import com.example.bbangeobung.security.UserDetailsImpl;
@@ -37,28 +38,14 @@ public class OauthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        System.out.println(oAuth2User.getName());
-
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
         // naver, kakao 로그인 구분
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, oAuth2User.getAttributes());
 
-
-        System.out.println(attributes);
-
-        User user = saveOrUpdate(attributes);
-
-        System.out.println(user.getEmail());
-
-
-        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
-        assert response != null;
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getEmail(), user.getRole()));
-
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(user.getRole().getAuthority())),
+                Collections.singleton(new SimpleGrantedAuthority(UserRoleEnum.USER.getAuthority())),
                 attributes.getAttributes(),
                 attributes.getNameAttributeKey());
     }
