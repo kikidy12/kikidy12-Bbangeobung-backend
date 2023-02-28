@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.util.Set;
+
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
@@ -23,6 +25,12 @@ public class Comment extends Timestamped{
 
     @ManyToOne(fetch = LAZY)
     private Store store;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<CommentReport> commentReportSet;
+
+
+
 
     public Comment(CommentRequestDto requestDto, Store store, User user) {
         this.comment = requestDto.getComment();
