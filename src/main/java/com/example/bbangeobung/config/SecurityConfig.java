@@ -1,32 +1,34 @@
 package com.example.bbangeobung.config;
 
+//import com.example.bbangeobung.auth.CustomOAuth2UserService;
+import com.example.bbangeobung.auth.CustomOAuth2UserService;
 import com.example.bbangeobung.cors.CorsFilter;
+import com.example.bbangeobung.entity.UserRoleEnum;
 import com.example.bbangeobung.jwt.JwtAuthFilter;
 import com.example.bbangeobung.jwt.JwtUtil;
+import com.nimbusds.oauth2.sdk.Role;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+    private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtUtil jwtUtil;
 
     @Bean
@@ -67,11 +69,17 @@ public class SecurityConfig {
 
                 .and()
                 .addFilterBefore(new CorsFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthFilter(jwtUtil), CorsFilter.class);
 
+                .addFilterBefore(new JwtAuthFilter(jwtUtil), CorsFilter.class);
+                http
+                .oauth2Login()
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService);
+//                        .and().successHandler();
 
         return http.build();
     }
+
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
