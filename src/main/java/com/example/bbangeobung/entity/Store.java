@@ -39,6 +39,9 @@ public class Store extends Timestamped {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StoreItem> storeItems;
 
+    @OneToMany(mappedBy = "store", cascade =  CascadeType.ALL, orphanRemoval = true)
+    private Set<StoreLikeUsers> storeLikeUsers;
+
     @Builder
     public Store(Double latitude, Double longitude, String imageURL, String content, User user, Set<StoreInfoFishBreadType> infoFishBreadTypes, Set<StoreItem> storeItems) {
         this.latitude = latitude;

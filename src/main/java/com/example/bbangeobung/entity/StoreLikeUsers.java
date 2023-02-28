@@ -22,4 +22,10 @@ public class StoreLikeUsers extends Timestamped {
 
     @ManyToOne(fetch = LAZY)
     Store store;
+
+    public StoreLikeUsers(User user, Store store) {
+        this.user = user;
+        this.store = store;
+    }
+
 }
