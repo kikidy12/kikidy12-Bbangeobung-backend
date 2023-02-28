@@ -32,6 +32,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.6.2'
+
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
 
     implementation group: 'org.json', name: 'json', version: '20220924'

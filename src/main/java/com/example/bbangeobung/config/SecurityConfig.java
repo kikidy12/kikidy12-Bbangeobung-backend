@@ -3,6 +3,8 @@ package com.example.bbangeobung.config;
 import com.example.bbangeobung.cors.CorsFilter;
 import com.example.bbangeobung.jwt.JwtAuthFilter;
 import com.example.bbangeobung.jwt.JwtUtil;
+import com.example.bbangeobung.oauth.CustomAuthenticationSuccessHandler;
+import com.example.bbangeobung.oauth.OauthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +30,10 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
+
+    private final OauthService oauthService;
+
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -67,7 +73,13 @@ public class SecurityConfig {
 
                 .and()
                 .addFilterBefore(new CorsFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthFilter(jwtUtil), CorsFilter.class);
+                .addFilterBefore(new JwtAuthFilter(jwtUtil), CorsFilter.class)
+
+                .oauth2Login()
+                .userInfoEndpoint()
+                .userService(oauthService)
+                .and()
+                .successHandler(customAuthenticationSuccessHandler);
 
 
         return http.build();
