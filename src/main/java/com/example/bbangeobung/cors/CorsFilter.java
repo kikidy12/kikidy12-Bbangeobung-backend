@@ -17,9 +17,11 @@ public class CorsFilter implements Filter {
         // 모든 출처에서의 요청을 허용하도록 설정합니다.
         response.setHeader("Access-Control-Allow-Origin", "*");
         // 요청 메서드를 허용합니다.
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE");
+        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
         // 요청 헤더를 허용합니다.
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        response.setHeader("Access-Control-Allow-Headers", "\"Origin, X-Requested-With, Content-Type, Accept, Key, Authorization\"");
         // Access-Control-Expose-Headers 헤더 설정
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
 
