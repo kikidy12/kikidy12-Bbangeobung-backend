@@ -8,7 +8,9 @@ import com.example.bbangeobung.entity.Store;
 import com.example.bbangeobung.entity.User;
 import com.example.bbangeobung.repository.CommentRepository;
 import com.example.bbangeobung.repository.StoreRepository;
+import com.example.bbangeobung.sse.CommentAddedEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,8 @@ public class CommentService {
 
     private final StoreRepository storeRepository;
 
+    private final ApplicationEventPublisher applicationEventPublisher;
+
     //댓글 등록
     @Transactional
     public CommentResponseDto createComment(CommentRequestDto requestDto, User user) {
@@ -30,7 +34,14 @@ public class CommentService {
 
         Comment comment = commentRepository.save(new Comment(requestDto, store, user));
 
+        onCommentAdded(requestDto.getStoreId(), comment.getId());
+
         return new CommentResponseDto(comment);
+    }
+
+    public void onCommentAdded(long storeId, long commentId) {
+        CommentAddedEvent event = new CommentAddedEvent(this, storeId, commentId);
+        applicationEventPublisher.publishEvent(event);
     }
 
     //댓글 조회

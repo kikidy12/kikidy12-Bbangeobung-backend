@@ -65,4 +65,21 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "user", "storeLikeUsers"
     })
     List<Store> findAllByItemName(String name);
+
+    @Query("SELECT s FROM Store s " +
+            "JOIN FETCH s.storeItems si " +
+            "WHERE  :name IS NULL OR :name = '' or EXISTS (" +
+            "SELECT s2.id FROM Store s2 " +
+            "INNER JOIN s2.storeItems si2 " +
+            "WHERE s.id = s2.id AND si2.name LIKE CONCAT('%', :name, '%')) " +
+            "ORDER BY CASE WHEN :name IS NULL OR :name = '' THEN s.id " +
+            "ELSE (" +
+            "SELECT si3.price FROM Store s3 " +
+            "INNER JOIN s3.storeItems si3 " +
+            "WHERE s.id = s3.id AND si3.name LIKE CONCAT('%', :name, '%')" +
+            ") END ASC")
+    @EntityGraph(attributePaths = {
+            "user"
+    })
+    List<Store> findAllByItemName2(String name);
 }
