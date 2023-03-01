@@ -1,5 +1,6 @@
 package com.example.bbangeobung.service;
 
+import com.example.bbangeobung.common.CustomClientException;
 import com.example.bbangeobung.dto.LoginRequestDto;
 import com.example.bbangeobung.dto.SignupRequestDto;
 import com.example.bbangeobung.dto.UserRequestDto;
@@ -8,6 +9,7 @@ import com.example.bbangeobung.entity.User;
 import com.example.bbangeobung.entity.UserRoleEnum;
 import com.example.bbangeobung.jwt.JwtUtil;
 import com.example.bbangeobung.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -120,7 +122,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public UserResponseDto getUesr(User user) {
+    public UserResponseDto getUser(User user) {
         return  UserResponseDto.builder()
                 .username(user.getUsername())
                 .email(user.getEmail())
@@ -129,5 +131,28 @@ public class UserService {
                 .build();
     }
 
+
+    public UserResponseDto getUserByToken(String accessToken, HttpServletResponse response) {
+
+
+
+        String token = accessToken.substring(7);
+        Claims info = jwtUtil.getUserInfoFromToken(token);
+        String email = info.getSubject();
+
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new CustomClientException("없는 유저입니다.")
+        );
+
+
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+
+        return  UserResponseDto.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .id(user.getId())
+                .role(user.getRole())
+                .build();
+    }
 
 }

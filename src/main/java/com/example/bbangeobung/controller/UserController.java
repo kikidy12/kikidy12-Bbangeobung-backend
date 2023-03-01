@@ -82,7 +82,7 @@ public class UserController {
     public ResponseDto<UserResponseDto> getUser(
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return ResponseDto.of(HttpStatus.OK, "조회 성공", userService.getUesr(userDetails.getUser()));
+        return ResponseDto.of(HttpStatus.OK, "조회 성공", userService.getUser(userDetails.getUser()));
     }
 
 
