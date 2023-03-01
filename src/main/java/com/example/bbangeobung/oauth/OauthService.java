@@ -41,11 +41,16 @@ public class OauthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
-        // naver, kakao 로그인 구분
-        OAuthAttributes attributes = OAuthAttributes.of(registrationId, oAuth2User.getAttributes());
 
-        return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(UserRoleEnum.USER.getAuthority())),
+        // naver, google, kakao 로그인 구분
+        OAuthAttributes attributes = OAuthAttributes.of(registrationId , userNameAttributeName, oAuth2User.getAttributes());
+
+
+        User user = saveOrUpdate(attributes);
+
+        return new CustomOAuth2User(
+                user,
+                Collections.singleton(new SimpleGrantedAuthority(user.getAuthority())),
                 attributes.getAttributes(),
                 attributes.getNameAttributeKey());
     }

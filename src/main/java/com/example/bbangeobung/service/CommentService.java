@@ -34,6 +34,8 @@ public class CommentService {
 
         Comment comment = commentRepository.save(new Comment(requestDto, store, user));
 
+        onCommentAdded(requestDto.getStoreId(), comment.getId());
+
         return new CommentResponseDto(comment);
     }
 

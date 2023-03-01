@@ -30,8 +30,6 @@ public class CommentController {
                                                          @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         CommentResponseDto dto = commentService.createComment(requestDto, userDetails.getUser());
-
-        commentService.onCommentAdded(requestDto.getStoreId(), dto.getId());
         return ResponseDto.of(HttpStatus.OK, "댓글 등록 성공", dto);
     }
 

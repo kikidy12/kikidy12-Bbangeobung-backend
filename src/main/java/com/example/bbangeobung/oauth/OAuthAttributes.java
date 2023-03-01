@@ -20,25 +20,46 @@ public class OAuthAttributes {
     private final String gender;
     private final String age;
 
-    public static OAuthAttributes of(String registrationId, Map<String, Object> attributes) {
-//        if("naver".equals(registrationId)) {
-//            return ofNaver("id", attributes);
-//        }
-//        else {
-//            return ofKakao("id", attributes);
-//        }
-        return ofNaver("id", attributes);
+    public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes){
+        if("naver".equals(registrationId)){
+            return ofNaver("id", attributes);
+        }
+        else if ("kakao".equals(registrationId)) {
+            return ofKakao("id", attributes);
+        }
+
+        return ofGoogle(userNameAttributeName, attributes);
+    }
+
+    private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes){
+        return OAuthAttributes.builder()
+                .name((String) attributes.get("name"))
+                .email((String) attributes.get("email"))
+                .attributes(attributes)
+                .nameAttributeKey(userNameAttributeName)
+                .build();
+    }
+
+    private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes){
+        Map<String, Object> kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
+        // kakao_account안에 또 profile이라는 JSON객체가 있다. (nickname, profile_image)
+        Map<String, Object> kakaoProfile = (Map<String, Object>)kakaoAccount.get("profile");
+
+        return OAuthAttributes.builder()
+                .name((String) kakaoProfile.get("nickname"))
+                .email((String) kakaoAccount.get("email"))
+                .picture((String) kakaoProfile.get("profile_image_url"))
+                .attributes(attributes)
+                .nameAttributeKey(userNameAttributeName)
+                .build();
     }
 
 
     private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
         if (attributes.get("response") == null) {
             return OAuthAttributes.builder()
-                    .name((String) attributes.get("nickname"))
+                    .name((String) attributes.get("name"))
                     .email((String) attributes.get("email"))
-                    .picture((String) attributes.get("profile_image"))
-                    .gender((String) attributes.get("gender"))
-                    .age((String) attributes.get("age"))
                     .attributes(attributes)
                     .nameAttributeKey(userNameAttributeName)
                     .build();
@@ -46,11 +67,8 @@ public class OAuthAttributes {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
         return OAuthAttributes.builder()
-                .name((String) response.get("nickname"))
+                .name((String) response.get("name"))
                 .email((String) response.get("email"))
-                .picture((String) response.get("profile_image"))
-                .gender((String) response.get("gender"))
-                .age((String) response.get("age"))
                 .attributes(response)
                 .nameAttributeKey(userNameAttributeName)
                 .build();
@@ -60,7 +78,7 @@ public class OAuthAttributes {
         return User.builder()
                 .email(email)
                 .username(name)
-                .password("naver")
+                .password("oauth")
                 .role(UserRoleEnum.USER)
                 .build();
     }
